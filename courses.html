@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Courses - EduCode</title>
+    <style>
+        /* Universal Reset & Typography */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Moving Multi-Color Gradient Background */
+        body {
+            background: linear-gradient(-45deg, #ff2a74, #ff7a00, #00b4ff, #00ffaa);
+            background-size: 400% 400%;
+            animation: gradientAnimation 12s ease infinite;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Header Navigation Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 10%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        header .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+        header nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        header nav a:hover {
+            opacity: 0.8;
+        }
+
+        /* Main Section Formatting */
+        main {
+            padding: 3rem 10%;
+            flex: 1;
+        }
+
+        /* Course Layout Matrix */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .course-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .course-info {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+        .course-info h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .course-info p {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 1.5rem;
+        }
+        .btn {
+            background: #ff2a74;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background: #e01b5d;
+        }
+
+        /* Modal Structure Configuration */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            max-width: 850px; 
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Toggle Views */
+        .modal-view-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .modal-view-form, .modal-view-login {
+            display: none;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .modal-grid-left {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-grid-left img {
+            width: 100%;
+            height: 100%;
+            max-height: 350px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .modal-grid-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+        .close-btn:hover { color: #333; }
+        .modal-content h2 { margin-bottom: 15px; color: #2c3e50; }
+        .modal-content h4 { margin-top: 15px; margin-bottom: 8px; color: #e74c3c; }
+        .modal-content ul { margin-left: 20px; line-height: 1.6; margin-bottom: 20px; }
+
+        /* Form Controls Styling */
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: #ff2a74;
+        }
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-secondary {
+            background: #aaa;
+        }
+        .btn-secondary:hover {
+            background: #888;
+        }
+
+        /* Switch text links */
+        .switch-form-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .switch-form-text a {
+            color: #ff2a74;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .switch-form-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Tablet & Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .modal-view-details {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .modal-grid-left img {
+                height: 180px;
+            }
+            main {
+                padding: 2rem 5%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo" onclick="window.location.href='index.html'">🚀 EduCode</div>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="courses.html" style="border-bottom: 2px solid white; padding-bottom: 3px;">Our Courses</a>
+        <a href="#" onclick="alert('About Page coming soon!')">About Us</a>
+        <a href="#" onclick="alert('Community features coming soon!')">Community</a>
+        <a href="#" onclick="alert('Contact form coming soon!')">Contact</a>
+        <a href="#" onclick="openDirectLogin(event)" style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 15px;">Login</a>
+    </nav>
+</header>
+
+    <main>
+        <h2 style="color: white; text-align: center; font-size: 2.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); margin-bottom: 20px;">Complete Course Catalog</h2>
+        
+        <div class="course-grid">
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=500" alt="HTML5" class="course-image">
+                <div class="course-info">
+                    <h3>HTML5 Basics</h3>
+                    <p>Learn the foundational structure of the web. Master elements, attributes, forms, and layout formatting from scratch.</p>
+                    <button class="btn" onclick="openCourse('html')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=500" alt="JavaScript" class="course-image">
+                <div class="course-info">
+                    <h3>JavaScript (ES6+)</h3>
+                    <p>Bring your websites to life. Master variables, functions, DOM manipulation, arrays, and event handlers.</p>
+                    <button class="btn" onclick="openCourse('javascript')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500" alt="Python" class="course-image">
+                <div class="course-info">
+                    <h3>Python Programming</h3>
+                    <p>A beginner-friendly entry into software logic. Perfect for automation, data processing, and backend logic systems.</p>
+                    <button class="btn" onclick="openCourse('python')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500" alt="Cybersecurity" class="course-image">
+                <div class="course-info">
+                    <h3>Ethical Hacking</h3>
+                    <p>Understand vulnerabilities, encryption protocols, and network packet sniffing to patch client systems safely.</p>
+                    <button class="btn" onclick="openCourse('cyber')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500" alt="Game Dev" class="course-image">
+                <div class="course-info">
+                    <h3>Game Dev (Unity)</h3>
+                    <p>Build 2D and 3D offline standalone interactive indie video game builds using vector physics engines and mechanics.</p>
+                    <button class="btn" onclick="openCourse('gamedev')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500" alt="Data Science" class="course-image">
+                <div class="course-info">
+                    <h3>Data Science</h3>
+                    <p>Parse files, structure metrics arrays, and generate computational chart metrics completely locally using logic scripting arrays.</p>
+                    <button class="btn" onclick="openCourse('datascience')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500" alt="Cloud" class="course-image">
+                <div class="course-info">
+                    <h3>Serverless Edge Cloud</h3>
+                    <p>Deploy applications globally on edge delivery networks. Master CDN distribution configurations without local server lags.</p>
+                    <button class="btn" onclick="openCourse('cloud')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=500" alt="UIUX" class="course-image">
+                <div class="course-info">
+                    <h3>UI/UX Layout Design</h3>
+                    <p>Design modern user flows, high-fidelity landing layout grids, responsive interactive wireframes, and prototypes.</p>
+                    <button class="btn" onclick="openCourse('uiux')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1607799279861-4dd421887fb3?w=500" alt="Rust" class="course-image">
+                <div class="course-info">
+                    <h3>Rust Systems Code</h3>
+                    <p>Master explicit memory checking concepts. Write lightning-fast engine architectures safely without compilation errors.</p>
+                    <button class="btn" onclick="openCourse('rust')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=500" alt="iOS" class="course-image">
+                <div class="course-info">
+                    <h3>iOS Apps (SwiftUI)</h3>
+                    <p>Design stunning native apps for Apple hardware ecosystems. Code interactive layout states and micro-gestures.</p>
+                    <button class="btn" onclick="openCourse('ios')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=500" alt="Algorithms" class="course-image">
+                <div class="course-info">
+                    <h3>Algorithms & Big O</h3>
+                    <p>Master logical arrays, search trees, complex computational graph queries, recursion patterns, and interview arrays.</p>
+                    <button class="btn" onclick="openCourse('dsa')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1527474305487-b87b222841cc?w=500" alt="Machine Learning" class="course-image">
+                <div class="course-info">
+                    <h3>In-Browser AI Matrix</h3>
+                    <p>Execute client-side neural calculation pipelines directly within web rendering layers through TensorFlow.js setups.</p>
+                    <button class="btn" onclick="openCourse('ml')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1516116211223-5c359a36298a?w=500" alt="TypeScript" class="course-image">
+                <div class="course-info">
+                    <h3>TypeScript Scale</h3>
+                    <p>Eliminate runtime bugs by introducing structural type systems, strict interfaces, and strong type-safety into JS builds.</p>
+                    <button class="btn" onclick="openCourse('typescript')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500" alt="Node JS" class="course-image">
+                <div class="course-info">
+                    <h3>Node.js Backend Architecture</h3>
+                    <p>Build super-fast network logic utilities. Master non-blocking events pipelines and secure HTTP microservices.</p>
+                    <button class="btn" onclick="openCourse('nodejs')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500" alt="Next.js" class="course-image">
+                <div class="course-info">
+                    <h3>Next.js Core Architecture</h3>
+                    <p>Master hybrid server component engines. Configure dynamic incremental static site delivery models for instantaneous load layouts.</p>
+                    <button class="btn" onclick="openCourse('nextjs')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1618401471353-b98aedd07871?w=500" alt="Git" class="course-image">
+                <div class="course-info">
+                    <h3>Git Workflow Mastery</h3>
+                    <p>Collaborate across remote development teams. Master branching methodologies, rebase adjustments, and conflict parsing loops.</p>
+                    <button class="btn" onclick="openCourse('git')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=500" alt="Linux" class="course-image">
+                <div class="course-info">
+                    <h3>Linux Terminal Systems</h3>
+                    <p>Master terminal execution routines, cron job schedules, user access rights arrays, and raw automation shell configurations.</p>
+                    <button class="btn" onclick="openCourse('linux')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1605745341112-85968b19335b?w=500" alt="Docker" class="course-image">
+                <div class="course-info">
+                    <h3>Docker Containers & Setup</h3>
+                    <p>Eliminate environment variation faults completely by packaging code runtime dependencies securely inside isolation boxes.</p>
+                    <button class="btn" onclick="openCourse('docker')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=500" alt="Web3" class="course-image">
+                <div class="course-info">
+                    <h3>Web3 & Solidity Logic</h3>
+                    <p>Construct unalterable immutable programs. Write cryptographically checked smart contracts inside decentralized ledger spaces.</p>
+                    <button class="btn" onclick="openCourse('web3')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500" alt="Flutter" class="course-image">
+                <div class="course-info">
+                    <h3>Flutter Cross-Platform</h3>
+                    <p>Compile production native binaries across iOS, Android, and web engines simultaneously from a singular Dart codebase layout.</p>
+                    <button class="btn" onclick="openCourse('flutter')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1605379399642-870262d3d051?w=500" alt="C++" class="course-image">
+                <div class="course-info">
+                    <h3>C++ Game & Core Engine</h3>
+                    <p>Harness extreme operational calculation limits. Master raw address pointers, memory management allocation blocks, and performance optimization.</p>
+                    <button class="btn" onclick="openCourse('cpp')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?w=500" alt="Penetration Testing" class="course-image">
+                <div class="course-info">
+                    <h3>Penetration Auditing</h3>
+                    <p>Audit defensive setups by evaluating active payload vector maps, credential overflows, and application vulnerability entry structures.</p>
+                    <button class="btn" onclick="openCourse('pented')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=500" alt="VueJS" class="course-image">
+                <div class="course-info">
+                    <h3>Vue.js Engine Design</h3>
+                    <p>Build lightning-fast responsive systems with virtual DOM state management, composition APIs, and reactive interfaces.</p>
+                    <button class="btn" onclick="openCourse('vue')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500" alt="Angular" class="course-image">
+                <div class="course-info">
+                    <h3>Angular Enterprise Systems</h3>
+                    <p>Master strict design architectures, built-in dependency injection channels, and RxJS data streams at massive scales.</p>
+                    <button class="btn" onclick="openCourse('angular')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=500" alt="GraphQL" class="course-image">
+                <div class="course-info">
+                    <h3>GraphQL API Query Architect</h3>
+                    <p>Optimize client network pipelines. Request exactly the structured data nodes you need from servers within a single response hook.</p>
+                    <button class="btn" onclick="openCourse('graphql')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=500" alt="SQL" class="course-image">
+                <div class="course-info">
+                    <h3>SQL Relational Schemas</h3>
+                    <p>Structure robust relation grids. Master advanced multi-table joins, subqueries, view optimization, and ACID properties.</p>
+                    <button class="btn" onclick="openCourse('sql')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1542744094-3a31f103e35f?w=500" alt="MongoDB" class="course-image">
+                <div class="course-info">
+                    <h3>MongoDB & NoSQL Clusters</h3>
+                    <p>Manage flexible document storage layouts. Model data hierarchies without strict pre-defined schema tracking rules.</p>
+                    <button class="btn" onclick="openCourse('mongodb')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500" alt="AWS" class="course-image">
+                <div class="course-info">
+                    <h3>AWS Infrastructure Cloud</h3>
+                    <p>Deploy enterprise software directly onto AWS clusters. Configure EC2 nodes, S3 buckets, and IAM policy permissions.</p>
+                    <button class="btn" onclick="openCourse('aws')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=500" alt="Kubernetes" class="course-image">
+                <div class="course-info">
+                    <h3>Kubernetes Clusters Pods</h3>
+                    <p>Automate deployment scaling operations across massive container networks. Manage replica controls and configuration maps.</p>
+                    <button class="btn" onclick="openCourse('kubernetes')">Start Learning</button>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <img src="https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=500" alt="WebAssembly" class="course-image">
+                <div class="course-info">
+                    <h3>Rust WebAssembly (WASM)</h3>
+                    <p>Compile memory-safe low-level systems logic code to execute inside internet viewports at near-native CPU processing speed.</p>
+                    <button class="btn" onclick="openCourse('wasm')">Start Learning</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="courseModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCourse()">&times;</span>
+            
+            <div class="modal-view-details" id="detailsView">
+                <div class="modal-grid-left">
+                    <img id="modalImage" src="" alt="Course Cover">
+                </div>
+                <div class="modal-grid-right">
+                    <h2 id="modalTitle">Course Title</h2>
+                    <p id="modalDescription"></p>
+                    <h4>📋 Syllabus Highlights:</h4>
+                    <ul id="modalSyllabus"></ul>
+                    
+                    <button class="btn" style="background: linear-gradient(45deg, #00b4ff, #00ffaa); color: #2c3e50;" onclick="showRegistrationForm()">
+                        Register for Course 🚀
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-view-form" id="formView">
+                <h2 style="text-align: center;">Course Registration</h2>
+                <p style="text-align: center; margin-bottom: 20px; color: #666;">Enrolling in: <strong id="formCourseTitle" style="color: #ff2a74;"></strong></p>
+                
+                <form id="regForm" onsubmit="handleFormSubmit(event)">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" required placeholder="john@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" required placeholder="+1 (555) 000-0000">
+                    </div>
+                    <div class="form-group">
+                        <label for="batchTime">Preferred Batch Time</label>
+                        <select id="batchTime" required>
+                            <option value="" disabled selected>Select a time slot</option>
+                            <option value="Morning Batch (9:00 AM - 11:00 AM)">Morning Batch (9:00 AM - 11:00 AM)</option>
+                            <option value="Afternoon Batch (2:00 PM - 4:00 PM)">Afternoon Batch (2:00 PM - 4:00 PM)</option>
+                            <option value="Evening Batch (6:00 PM - 8:00 PM)">Evening Batch (6:00 PM - 8:00 PM)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="showDetailsView()">Back</button>
+                        <button type="submit" class="btn">Submit Application</button>
+                    </div>
+
+                    <p class="switch-form-text">
+                        Already have an account? <a href="#" onclick="showLoginView(event)">Login Here</a>
+                    </p>
+                </form>
+            </div>
+<div class="modal-view-login" id="loginView">
+    <h2 style="text-align: center;">Student Login</h2>
+    <p style="text-align: center; margin-bottom: 20px; color: #666;">Sign in to access your dashboard</p>
+    
+  <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+            <div class="form-group">
+                <label for="loginEmail">Email Address</label>
+                <input type="email" id="loginEmail" required placeholder="john@example.com">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" required placeholder="••••••••">
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="showDetailsView()">Cancel</button>
+                <button type="submit" class="btn">Sign In</button>
+            </div>
+
+            <p class="switch-form-text">
+                Don't have an account yet? <a href="#" onclick="showRegistrationForm()">Register Here</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Comprehensive Course Database Mapping for the Dynamic Modal View
+    const courseData = {
+        html: {
+            title: "HTML5 Basics",
+            description: "Learn the foundational structure of the web. This course covers document semantics, structuring forms safely, rendering layouts, and embedding modern multimedia tools cleanly.",
+            syllabus: ["Document Object Structures", "Semantic Layout & Form Inputs", "Media & Audio Frameworks", "SEO Accessibility Standards Architecture"],
+            image: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=500"
+        },
+        javascript: {
+            title: "JavaScript (ES6+)",
+            description: "Bring your websites to life by learning functional execution, asynchronous logic control loops, object arrays processing, and real-time DOM management paradigms.",
+            syllabus: ["Variables, Data Blocks, & Functions", "Asynchronous Event Listeners Loops", "JSON Storage API Fetch Operations", "Modular Script Compiling Logic"],
+            image: "https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=500"
+        },
+        python: {
+            title: "Python Programming",
+            description: "An elegant, beginner-friendly entry into software logic pipelines. Master algorithmic script automations, database processing matrix frameworks, and simple servers.",
+            syllabus: ["Core Logic Variables & Loops", "Data Processing Modules & Structures", "Object-Oriented Programming (OOP)", "File Reader Parsing Systems Setup"],
+            image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500"
+        },
+        cyber: {
+            title: "Ethical Hacking",
+            description: "Analyze web setups like an offensive specialist to identify vulnerabilities, run secure environment penetration loops, and configure solid protection defenses.",
+            syllabus: ["Network Packet Sniffing & Overflows", "Cross-Site Scripting Mitigation", "SQL Injection Security Patches", "Encryption & Firewall Policies Configuration"],
+            image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500"
+        },
+        gamedev: {
+            title: "Game Dev (Unity)",
+            description: "Build fluid interactive 2D and 3D indie experiences from a singular C# logic engine workflow. Program lightning fast game states and responsive movement physics maps.",
+            syllabus: ["C# Scripting Engine Pipelines", "Vector Mechanics & RigidBody Controls", "Lighting & Render Layer Matrices", "Production Export Optimization Layouts"],
+            image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500"
+        },
+        datascience: {
+            title: "Data Science",
+            description: "Transform raw dataset files into useful visualization models. Write high-powered numerical analytics arrays, filter parameters, and engineer clear metrics systems.",
+            syllabus: ["Data Arrays Cleanup Paradigms", "Statistical Math Engine Integration", "Matplotlib Visual Matrix Displays", "Pandas and NumPy Pipeline Frameworks"],
+            image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500"
+        },
+        cloud: {
+            title: "Serverless Edge Cloud",
+            description: "Architect high-performance distributed programs that launch on edge CDNs instantaneously, bypassing single cloud instances to eradicate interface latency completely.",
+            syllabus: ["Global Edge CDN Layout Strategy", "Micro-Function Route Scaling Logs", "Cloud KV Cache Integration Layers", "Infrastructure Monitoring Auditing Sheets"],
+            image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500"
+        },
+        uiux: {
+            title: "UI/UX Layout Design",
+            description: "Conceptualize stunning visual architectures. Design sleek structural layouts, high-fidelity landing grids, responsive vector wireframes, and production-ready mockups.",
+            syllabus: ["User Journey Archetype Workflows", "Grid Systems & Responsive Sizing", "Interactive Blueprint States Wireframes", "Figma Ecosystem Hand-off Frameworks"],
+            image: "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=500"
+        },
+        rust: {
+            title: "Rust Systems Code",
+            description: "Harness high-speed native thread compilation without relying on a garbage collector. Deep dive into explicit lifetime boundaries and compile-time safety rules.",
+            syllabus: ["Ownership & Borrowing Memory Safety", "Explicit Lifetime Struct Definitions", "Concurrent Thread Safety Models", "Zero-Cost Abstractions Compilation"],
+            image: "https://images.unsplash.com/photo-1607799279861-4dd421887fb3?w=500"
+        },
+        ios: {
+            title: "iOS Apps (SwiftUI)",
+            description: "Create state-driven native Apple applications. Formulate declarative UI components, beautiful micro-gestures, and integrated spatial animations.",
+            syllabus: ["Declarative SwiftUI View Architecture", "State & Binding Variables Data Flow", "CoreData Device Pipeline Syncing", "Apple Hardware Graphics Frameworks"],
+            image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=500"
+        },
+        dsa: {
+            title: "Algorithms & Big O",
+            description: "Build production-ready algorithmic problem solving skills. Evaluate workspace execution space, scale graph queries, and conquer advanced software interviews.",
+            syllabus: ["Big O Time & Space Optimization", "Recursion & Backtracking Sequences", "Binary Search Trees Matrix Nodes", "Dynamic Programming Cache Calculations"],
+            image: "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=500"
+        },
+        ml: {
+            title: "In-Browser AI Matrix",
+            description: "Train and execute machine learning mathematical graph networks directly inside web browsers using processing layers from WebGL via TensorFlow.js pipelines.",
+            syllabus: ["Neural Layer Matrix Frameworks", "Client-Side Ingest Data Training", "Computer Vision Canvas Processing", "Pre-trained Inference Weights Allocation"],
+            image: "https://images.unsplash.com/photo-1527474305487-b87b222841cc?w=500"
+        },
+        typescript: {
+            title: "TypeScript Scale",
+            description: "Bring strict enterprise software integrity to client code layers. Implement highly protective interface definitions to intercept runtime issues beforehand.",
+            syllabus: ["Strict Structural Intersect Typing", "Generics & Parametric Class Designs", "Abstract Interface Engine Scaffolding", "Compiler Rigor Mode Level Switching"],
+            image: "https://images.unsplash.com/photo-1516116211223-5c359a36298a?w=500"
+        },
+        nodejs: {
+            title: "Node.js Backend Architecture",
+            description: "Write highly throughput asynchronous REST architectures using JavaScript runtime layers. Configure scalable HTTP request microservice parameters cleanly.",
+            syllabus: ["Event Loop Process Mechanics", "Stream Buffering Parsing Utilities", "Express API Routing Integration Layers", "Secure Middleware JWT Identity Control"],
+            image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500"
+        },
+        nextjs: {
+            title: "Next.js Core Architecture",
+            description: "Combine React view architectures with server-side incremental execution algorithms to dispatch instantaneous web load states dynamically.",
+            syllabus: ["React Server Component (RSC) Cycles", "Incremental Static Regeneration (ISR)", "Dynamic Routing Query Pipeline Maps", "Edge Rendering Middleware Adaptations"],
+            image: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500"
+        },
+        git: {
+            title: "Git Workflow Mastery",
+            description: "Coordinate large scale multi-engineer code updates. Manage non-linear branching algorithms, clean rewrite commits, and handle merge conflicts securely.",
+            syllabus: ["Advanced Rebase Commit Restructuring", "Cherry-Picking Target Revision Logs", "Interactive Merge Conflict Tracking", "Continuous Integration Branch Gateways"],
+            image: "https://images.unsplash.com/photo-1618401471353-b98aedd07871?w=500"
+        },
+        linux: {
+            title: "Linux Terminal Systems",
+            description: "Operate core servers directly via automated terminal shells. Manage granular file access constraints, deploy daemons, and schedule automated scripts.",
+            syllabus: ["Bash Script Automation Patterns", "Cron Schedule Task Management", "POSIX Access Control Matrix Logging", "Network Port Traffic Diagnostics Control"],
+            image: "https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=500"
+        },
+        docker: {
+            title: "Docker Containers & Setup",
+            description: "Package application layers inside standardized sandboxed spaces to confirm code launches flawlessly without host dependency variance discrepancies.",
+            syllabus: ["Multi-Stage Dockerfile Layout Blocks", "Isolated Local Virtual Port Mapping", "Docker Compose Multi-Container Orchestration", "Layer Volume Storage Binding Schemes"],
+            image: "https://images.unsplash.com/photo-1605745341112-85968b19335b?w=500"
+        },
+        web3: {
+            title: "Web3 & Solidity Logic",
+            description: "Write immutable backend execution structures. Manage mathematical data balances and secure consensus rules across cryptographic ledger spaces.",
+            syllabus: ["Solidity Smart Contract State Maps", "Gas Consumption Function Tuning", "ERC Token Design Specifications", "Decentralized RPC Interface Hooks Setup"],
+            image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=500"
+        },
+        flutter: {
+            title: "Flutter Cross-Platform",
+            description: "Construct native UI structures rendering at 120Hz directly through custom graphics compilers across mobile screens using single Dart system configurations.",
+            syllabus: ["Reactive Stateful Widget Layout Models", "Skia/Impeller Graphics Engine Rendering", "Global Application Context Management Rules", "Native Platform Channel Device Hooks"],
+            image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500"
+        },
+        cpp: {
+            title: "C++ Game & Core Engine",
+            description: "Unlock hardware computational execution metrics. Master explicit address references, immediate heap control algorithms, and low latency game loop operations.",
+            syllabus: ["Raw Pointer Address Math Management", "RAII Memory Scope Control Frameworks", "Object Polling Cache Miss Reduction", "Compiler Flag Optimization Sequences"],
+            image: "https://images.unsplash.com/photo-1605379399642-870262d3d051?w=500"
+        },
+        pented: {
+            title: "Penetration Auditing",
+            description: "Validate enterprise network shields using target reconnaissance loops, real-time logging, buffer verification, and systematic exploit framework checks.",
+            syllabus: ["Network Port Perimeter Auditing Scans", "Memory Buffer Vulnerability Probes", "Active payload Vector Strategy Maps", "System Compliance Exploit Reporting Templates"],
+            image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=500"
+        },
+        vue: {
+            title: "Vue.js Engine Design",
+            description: "Build clean web apps using proxy state updates, component layouts, dynamic render caching, and single-file architectures.",
+            syllabus: ["Composition API Setup Mechanics", "Reactive Ref and Reactive Proxy Maps", "Virtual DOM Synchronization Protocols", "Pinia Global Central State Control"],
+            image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=500"
+        },
+        angular: {
+            title: "Angular Enterprise Systems",
+            description: "Develop massive production applications using strict interface structures, automatic object instantiation layers, and reactive event processing patterns.",
+            syllabus: ["Strict Dependency Injection Scaffolding", "RxJS Multi-Stream Event Transformations", "NgModule Feature Bundle Structuring", "Zone.js UI Refresh Update Cycles"],
+            image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500"
+        },
+        graphql: {
+            title: "GraphQL API Query Architect",
+            description: "Re-engineer backend communication structures. Build a single entry path layout for clients to pull exactly their matching data formats without duplicate roundtrips.",
+            syllabus: ["Strongly Typed Schema Definitions", "Resolver Function Query Data Fetching", "Database Select Query N+1 Optimization", "Real-Time Schema Subscription Websockets"],
+            image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=500"
+        },
+        sql: {
+            title: "SQL Relational Schemas",
+            description: "Design transactional structural tables. Master relational integrity keys, normalized field layout rules, and accelerated indexing lookup mechanics.",
+            syllabus: ["Multi-Table Join Operational Tuning", "Database Index B-Tree Layout Maps", "ACID Transaction Locking Logic States", "Subquery and Window Function Expressions"],
+            image: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=500"
+        },
+        mongodb: {
+            title: "MongoDB & NoSQL Clusters",
+            description: "Structure high-volume JSON documents directly. Master adaptive collections scaling algorithms, data validation routines, and lookup pipelines.",
+            syllabus: ["Hierarchical BSON Document Layout Mapping", "Aggregation Pipeline Stage Chain Blocks", "Distributed Replica Set Shared Routing", "Index Strategy Configuration Optimization"],
+            image: "https://images.unsplash.com/photo-1542744094-3a31f103e35f?w=500"
+        },
+        aws: {
+            title: "AWS Infrastructure Cloud",
+            description: "Deploy and manage resilient global tech stacks using virtual servers, managed network containers, and permission management grids.",
+            syllabus: ["EC2 Instance Elastic Provisioning Routes", "VPC Network Subnet Architecture Layout", "IAM Policy Access Control Mapping", "S3 Bucket Static Asset Pipelines"],
+            image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500"
+        },
+        kubernetes: {
+            title: "Kubernetes Clusters Pods",
+            description: "Deploy automated container orchestration systems that self-heal, balance incoming user web requests, and swap engine layers smoothly.",
+            syllabus: ["YAML Manifest Pod Specifications", "Ingress Network Load Balancer Routing", "ConfigMap and Secret Environment Insertion", "Automated Replica Set HPA Microscaling"],
+            image: "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=500"
+        },
+        wasm: {
+            title: "Rust WebAssembly (WASM)",
+            description: "Compile systems-level logic files into explicit binary structures running inside browser environments alongside classic client javascript scripts.",
+            syllabus: ["wasm-bindgen Memory Allocation Layers", "Canvas Context Hardware Render Pipelines", "Linear Memory Allocation Buffer Swaps", "High-Volume Real-Time Audio Encoding Modules"],
+            image: "https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=500"
+        }
+    };
+
+    // Tracks current open course context
+    let selectedCourseKey = '';
+
+    // Modal Visibility Control & Dynamic View Switching
+    function openCourse(courseKey) {
+        const course = courseData[courseKey];
+        if (!course) return;
+
+        selectedCourseKey = courseKey;
+
+        // Inject data nodes dynamically into the layout DOM
+        document.getElementById('modalTitle').innerText = course.title;
+        document.getElementById('modalDescription').innerText = course.description;
+        document.getElementById('modalImage').src = course.image;
+        document.getElementById('formCourseTitle').innerText = course.title;
+
+        // Build list items array
+        const syllabusContainer = document.getElementById('modalSyllabus');
+        syllabusContainer.innerHTML = '';
+        course.syllabus.forEach(item => {
+            const li = document.createElement('li');
+            li.innerText = item;
+            syllabusContainer.appendChild(li);
+        });
+
+        // Toggle modal open view states
+        showDetailsView();
+        document.getElementById('courseModal').style.display = 'flex';
+    }
+
+    function closeCourse() {
+        document.getElementById('courseModal').style.display = 'none';
+        // Reset inputs cleanly
+        document.getElementById('regForm').reset();
+        document.getElementById('loginForm').reset();
+    }
+
+    function showDetailsView() {
+        document.getElementById('detailsView').style.display = 'grid';
+        document.getElementById('formView').style.display = 'none';
+        document.getElementById('loginView').style.display = 'none';
+    }
+
+    function showRegistrationForm() {
+        document.getElementById('detailsView').style.display = 'none';
+        document.getElementById('formView').style.display = 'block';
+        document.getElementById('loginView').style.display = 'none';
+    }
+
+    function showLoginView(event) {
+        if(event) event.preventDefault();
+        document.getElementById('detailsView').style.display = 'none';
+        document.getElementById('formView').style.display = 'none';
+        document.getElementById('loginView').style.display = 'block';
+    }
+
+    // Handles the Login request from Header
+    function openDirectLogin(event) {
+        if(event) event.preventDefault();
+        // Fallback title data just in case
+        document.getElementById('formCourseTitle').innerText = "EduCode Workspace Platform";
+        
+        document.getElementById('detailsView').style.display = 'none';
+        document.getElementById('formView').style.display = 'none';
+        document.getElementById('loginView').style.display = 'block';
+        document.getElementById('courseModal').style.display = 'flex';
+    }
+
+    // Process Forms Formulations & Actions
+    function handleFormSubmit(event) {
+        event.preventDefault();
+        const name = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const batch = document.getElementById('batchTime').value;
+        const courseTitle = courseData[selectedCourseKey]?.title || "Selected Field";
+
+        alert(`Congratulations ${name}!\nYour application for "${courseTitle}" (${batch}) has been processed successfully.\nCheck your email inbox at ${email} for platform boarding details.`);
+        closeCourse();
+    }
+
+    function handleLoginSubmit(event) {
+        event.preventDefault();
+        const loginEmail = document.getElementById('loginEmail').value;
+        alert(`Success! Logging into account workspace for: ${loginEmail}.\nRedirecting you to active learning dashboard terminal nodes...`);
+        closeCourse();
+    }
+
+    // Close Modal safely if user hits the dark overlay background element area
+    window.onclick = function(event) {
+        const modal = document.getElementById('courseModal');
+        if (event.target === modal) {
+            closeCourse();
+        }
+    }
+
+    // Auto-Trigger Logic if lander parameters contain action flags
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'login') {
+            openDirectLogin(null);
+        }
+    });
+</script>
+</body>
+</html>
